@@ -1,8 +1,7 @@
 plugins {
     id 'java'
-    id 'eclipse'
     id 'idea'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'me.champeau.gradle.jmh' version '0.2.0'
     id 'net.ltgt.apt' version '0.3'
 }
@@ -27,8 +26,8 @@ dependencies {
     compile "org.openjdk.jmh:jmh-core:${jmh.jmhVersion}"
     apt "org.openjdk.jmh:jmh-generator-annprocess:${jmh.jmhVersion}"
 
-    compile group: 'biz.k11i', name: 'xgboost-predictor', version: '0.1.0'
-    compile group: 'org.dmlc', name: 'xgboost4j', version: '1.1'
+    compile group: 'biz.k11i', name: 'xgboost-predictor', version: '0.3.0'
+    compile group: 'ml.dmlc', name: 'xgboost4j', version: '0.81'
 }
 
 jmh {

@@ -1,9 +1,10 @@
 package biz.k11i.xgboost;
 
 import biz.k11i.xgboost.util.FVec;
-import org.dmlc.xgboost4j.Booster;
-import org.dmlc.xgboost4j.DMatrix;
-import org.dmlc.xgboost4j.util.XGBoostError;
+import ml.dmlc.xgboost4j.java.Booster;
+import ml.dmlc.xgboost4j.java.DMatrix;
+import ml.dmlc.xgboost4j.java.XGBoost;
+import ml.dmlc.xgboost4j.java.XGBoostError;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
@@ -26,7 +27,7 @@ public class Bench {
 
         public PredictionState() {
             try (FileInputStream fis = new FileInputStream(TestData.MODEL_PATH)) {
-                    this.booster = new Booster(TestData.generateParameters(), TestData.MODEL_PATH);
+                    this.booster = XGBoost.loadModel(TestData.MODEL_PATH);
                     this.predictor = new Predictor(fis);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -47,7 +48,7 @@ public class Bench {
     public static class Load {
         @Benchmark
         public void xgboost4j(Blackhole bh) throws XGBoostError {
-            bh.consume(new Booster(TestData.generateParameters(), TestData.MODEL_PATH));
+            bh.consume(XGBoost.loadModel(TestData.MODEL_PATH));
         }
 
         @Benchmark
@@ -64,7 +65,7 @@ public class Bench {
         public void xgboost4j(PredictionState model) throws XGBoostError {
             DMatrix fv = new DMatrix(model.data[0], 1, TestData.NUM_DIMENSIONS);
             model.booster.predict(fv);
-            fv.delete();
+            fv.dispose();
         }
 
         @Benchmark
@@ -79,7 +80,7 @@ public class Bench {
         public void xgboost4j(PredictionState model) throws XGBoostError {
             DMatrix fv = new DMatrix(model.matrix, PredictionState.NUM_ROWS, TestData.NUM_DIMENSIONS);
             model.booster.predict(fv);
-            fv.delete();
+            fv.dispose();
         }
 
         @Benchmark
@@ -95,8 +96,8 @@ public class Bench {
         @Benchmark
         public void xgboost4j(PredictionState model) throws XGBoostError {
             DMatrix fv = new DMatrix(model.data[0], 1, TestData.NUM_DIMENSIONS);
-            model.booster.predict(fv, 0, true);
-            fv.delete();
+            model.booster.predict(fv, true, 0);
+            fv.dispose();
         }
 
         @Benchmark
