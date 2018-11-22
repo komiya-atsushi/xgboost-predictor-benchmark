@@ -1,9 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
-    id 'me.champeau.gradle.jmh' version '0.2.0'
-    id 'net.ltgt.apt' version '0.3'
+    id 'me.champeau.gradle.jmh' version '0.4.7'
 }
 
 repositories {
@@ -15,24 +13,14 @@ sourceCompatibility = targetCompatibility = 1.8
 
 tasks.withType(AbstractCompile)*.options*.encoding = "UTF-8"
 
-jmh.jmhVersion = '1.10.+'
-
-jmhJar {
-    append 'META-INF/BenchmarkList'
-    append 'META-INF/CompilerHints'
-}
-
 dependencies {
-    compile "org.openjdk.jmh:jmh-core:${jmh.jmhVersion}"
-    apt "org.openjdk.jmh:jmh-generator-annprocess:${jmh.jmhVersion}"
-
     compile group: 'biz.k11i', name: 'xgboost-predictor', version: '0.3.0'
     compile group: 'ml.dmlc', name: 'xgboost4j', version: '0.81'
 }
 
 jmh {
-    jmhVersion = "${jmh.jmhVersion}"
-    benchmarkMode = 'thrpt'
+    jmhVersion = '1.21'
+    benchmarkMode = ['thrpt']
     warmup = '1s'
     warmupIterations = 20
     timeOnIteration = '1s'
