@@ -1,17 +1,14 @@
 package biz.k11i.xgboost;
 
-import org.dmlc.xgboost4j.Booster;
-import org.dmlc.xgboost4j.DMatrix;
-import org.dmlc.xgboost4j.util.Trainer;
-import org.dmlc.xgboost4j.util.XGBoostError;
+
+import ml.dmlc.xgboost4j.java.Booster;
+import ml.dmlc.xgboost4j.java.XGBoost;
+import ml.dmlc.xgboost4j.java.DMatrix;
+import ml.dmlc.xgboost4j.java.XGBoostError;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.*;
+
 
 public class TestData {
     static final int NUM_DIMENSIONS = 100000;
@@ -52,37 +49,37 @@ public class TestData {
         return result;
     }
 
-    static Iterable<Entry<String, Object>> generateParameters() {
+    static Map<String, Object> generateParameters() {
         return new HashMap<String, Object>() {{
             put("eta", 1.0);
             put("max_depth", 6);
             put("silent", 1);
             put("objective", "binary:logistic");
-        }}.entrySet();
+        }};
     }
 
     static void generateTestModel() throws XGBoostError, IOException {
         byte nrow = 100;
         int ncol = NUM_DIMENSIONS;
 
-        Iterable<Entry<String, Object>> param = generateParameters();
+        Map<String, Object> param = generateParameters();
 
-        byte round = 10;
+        int round = 10;
 
         DMatrix trainMatrix = generateDMatrix(12345, nrow, ncol);
         DMatrix testMatrix = generateDMatrix(23456, nrow, ncol);
 
-        List<Entry<String, DMatrix>> watchs = new LinkedHashMap<String, DMatrix>() {{
+        Map<String, DMatrix> watchs = new LinkedHashMap<String, DMatrix>() {{
             put("train", trainMatrix);
             put("test", testMatrix);
-        }}.entrySet().stream().collect(Collectors.toList());
+        }};
 
-        Booster booster = Trainer.train(param, testMatrix, round, watchs, null, null);
+        Booster booster = XGBoost.train(testMatrix, param, round, watchs, null, null);
         booster.saveModel(MODEL_PATH);
 
-        trainMatrix.delete();
-        testMatrix.delete();
-        booster.delete();
+        trainMatrix.dispose();
+        testMatrix.dispose();
+        booster.dispose();
     }
 
     public static void main(String[] args) throws IOException, XGBoostError {
